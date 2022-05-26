@@ -5,26 +5,31 @@
 
 from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
 import glob
+import os
 
 def ping(*args):
     results = []
-    parse = args[0].split()
-    parseLen = len(parse[1:])
+    argLen = len(args[1:])
 
-    results.append(('Size', parseLen))
-    results.append(('Message', parse[1:]))
+    response = {
+        "success": True,
+        "result": {
+            "wordCount": argLen,
+            "messages": args[1:]
+        }
+    }
 
+    results.append(response)
     return results
 
 def ls(*args):
     results = []
-    parse = args[0].split()
-    parseLen = len(parse)
+    argsLen = len(args)
 
-    if parseLen == 1:
+    if argsLen == 1:
         globbed = glob.glob('*')
     else:
-        globbed = glob.glob(parse[1])
+        globbed = glob.glob(args[1])
 
     for i in globbed:
         results.append(i)
@@ -33,16 +38,48 @@ def ls(*args):
 
 def count(*args):
     results = []
-    parse = args[0].split()
-    parseLen = len(parse)
+    argsLen = len(args)
 
-    if parseLen == 1:
+    if argsLen == 1:
         globbed = glob.glob('*')
     else:
-        globbed = glob.glob(parse[1])
+        globbed = glob.glob(args[1])
 
     results.append(('Size', len(globbed)))
 
+    return results
+
+def get(*args):
+    results = []
+    argsLen = len(args)
+
+    if argsLen != 2:
+        response = {
+            "success": False,
+            "errorMsg": "Not enough argument passed into get@FileManageFacade",
+        }
+        results.append(response)
+        return results
+
+    if os.path.exists(args[1]):
+        fileSize = os.path.getsize(args[1]) / 1024
+        fileName = (args[1].split('/'))[-1]
+
+        response = {
+            "success": True,
+            "result": {
+                "fileSize": fileSize,
+                "fileName" : fileName
+            }
+        }
+        results.append(response)
+        return results
+
+    response = {
+        "success": False,
+        "errorMsg": "File not found"
+    }
+    results.append(response)
     return results
 
 def main():
@@ -50,6 +87,7 @@ def main():
     server.register_function(ping)
     server.register_function(ls)
     server.register_function(count)
+    server.register_function(get)
     print("Starting server")
     server.serve_forever()
 
