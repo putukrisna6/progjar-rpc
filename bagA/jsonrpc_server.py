@@ -105,6 +105,37 @@ def get(*args):
     }
     results.append(response)
     return results
+    
+def send(*args):
+    results = []
+    argsLen = len(args)
+
+    if argsLen == 1 and args[0] == 'FILE_NOT_FOUND':
+        response = {
+            "success": False,
+            "errorMsg": "Unable to receive file"
+        }
+        results.append(response)
+        return results
+
+    if argsLen != 2:
+        response = {
+            "success": False,
+            "errorMsg": "Invalid argument count for send@FileManageFacade",
+        }
+        results.append(response)
+        return results
+
+    decoded = base64.b64decode(args[1])
+    f = open('server_files/' + args[0], 'wb')
+    f.write(decoded)
+    f.close
+
+    response = {
+        "success": True,
+    }
+    results.append(response)
+    return results
 
 def main():
     server = SimpleJSONRPCServer(('localhost', 7002))
@@ -112,6 +143,7 @@ def main():
     server.register_function(ls)
     server.register_function(count)
     server.register_function(get)
+    server.register_function(send)
     print("Starting server")
     server.serve_forever()
 

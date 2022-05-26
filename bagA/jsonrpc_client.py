@@ -24,6 +24,9 @@ class FileManageFacade:
     def get(self, cmd):
         return self.proxy.get(*cmd)
 
+    def send(self, cmd):
+        return self.proxy.send(*cmd)
+
 def printHelper(replies):
     for r in replies:
         print(r)
@@ -45,6 +48,24 @@ def getHelper(response):
     f = open('client_files/' + fileTarget, 'wb')
     f.write(decoded)
     f.close()
+
+def sendHelper(cmds):
+    fileData = []
+    if len(cmds) != 3:
+        return fileData
+
+    if os.path.exists(cmds[1]):
+        fileTarget = cmds[2]
+        
+        f = open(cmds[1], 'rb').read()
+        fileEncoded = base64.b64encode(f)
+
+        fileData.append(fileTarget)
+        fileData.append(fileEncoded)
+        return fileData
+
+    fileData.append('FILE_NOT_FOUND')
+    return fileData
 
 def makeDirIfNotExist(path):
     isExist = os.path.exists(path)
@@ -70,6 +91,9 @@ def main():
             jsonHelper(facade.count(cmds))
         elif cmds[0] == 'get':
             getHelper(facade.get(cmds))
+        elif cmds[0] == 'send':
+            fileData = sendHelper(cmds)
+            jsonHelper(facade.send(fileData))
 
 if __name__ == '__main__':
     main()
