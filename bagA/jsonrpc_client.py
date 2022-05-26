@@ -14,7 +14,6 @@ class FileManageFacade:
         return self.proxy.ping(cmd)
 
 def main():
-    # proxy = Server('http://localhost:7002')
     facade = FileManageFacade()
 
     cmd = ''
