@@ -42,9 +42,9 @@ def main():
         if cmds[0] == 'ping':
             jsonHelper(facade.ping(cmds))
         elif cmds[0] == 'ls':
-            printHelper(facade.ls(cmds))
+            jsonHelper(facade.ls(cmds))
         elif cmds[0] == 'count':
-            printHelper(facade.count(cmds))
+            jsonHelper(facade.count(cmds))
         elif cmds[0] == 'get':
             jsonHelper(facade.get(cmds))
 
