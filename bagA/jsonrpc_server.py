@@ -8,23 +8,23 @@ import glob
 
 def ping(*args):
     results = []
-    results.append(('Size', len(args)))
+    parse = args[0].split()
+    parseLen = len(parse[1:])
 
-    i = 1
-    for arg in args:
-        results.append(('Message_{}'.format(i), arg))
-        i += 1
+    results.append(('Size', parseLen))
+    results.append(('Message', parse[1:]))
 
     return results
 
 def ls(*args):
     results = []
-    argSize = len(args)
+    parse = args[0].split()
+    parseLen = len(parse)
 
-    if argSize == 1:
+    if parseLen == 1:
         globbed = glob.glob('*')
     else:
-        globbed = glob.glob(args[1])
+        globbed = glob.glob(parse[1])
 
     for i in globbed:
         results.append(i)
@@ -34,6 +34,7 @@ def ls(*args):
 def main():
     server = SimpleJSONRPCServer(('localhost', 7002))
     server.register_function(ping)
+    server.register_function(ls)
     print("Starting server")
     server.serve_forever()
 
