@@ -6,13 +6,21 @@
 from jsonrpclib import Server
 import json
 
+class FileManageFacade:
+    def __init__(self):
+        self.proxy = Server('http://localhost:7002')
+
+    def ping(self, cmd):
+        return self.proxy.ping(cmd)
+
 def main():
-    proxy = Server('http://localhost:7002')
+    # proxy = Server('http://localhost:7002')
+    facade = FileManageFacade()
 
     cmd = ''
     while (cmd != 'quit'):
         cmd = input()
-        print(proxy.ping(cmd))
+        print(facade.ping(cmd))
 
 if __name__ == '__main__':
     main()
