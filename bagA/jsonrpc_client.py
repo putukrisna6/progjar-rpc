@@ -3,10 +3,10 @@
 # https://github.com/brandon-rhodes/fopnp/blob/m/py3/chapter18/jsonrpc_client.py
 # JSON-RPC client needing "pip install jsonrpclib-pelix"
 
-from textwrap import indent
-from click import command
 from jsonrpclib import Server
 import json
+import os
+import base64
 
 class FileManageFacade:
     def __init__(self):
@@ -31,8 +31,31 @@ def printHelper(replies):
 def jsonHelper(response):
     print(json.dumps(response, indent=4))
 
+def getHelper(response):
+    jsonHelper(response)
+
+    if not response[0]['success']:
+        return
+
+    result = response[0]['result']
+    fileEncoded = result['fileEncoded']
+    fileTarget = result['fileTarget']
+    
+    decoded = base64.b64decode(fileEncoded)
+    f = open('client_files/' + fileTarget, 'wb')
+    f.write(decoded)
+    f.close()
+
+def makeDirIfNotExist(path):
+    isExist = os.path.exists(path)
+
+    if not isExist:
+        os.makedirs(path)
+    
 def main():
     facade = FileManageFacade()
+    makeDirIfNotExist('client_files')
+    makeDirIfNotExist('server_files')
 
     cmd = ''
     while (cmd != 'quit'):
@@ -46,7 +69,7 @@ def main():
         elif cmds[0] == 'count':
             jsonHelper(facade.count(cmds))
         elif cmds[0] == 'get':
-            jsonHelper(facade.get(cmds))
+            getHelper(facade.get(cmds))
 
 if __name__ == '__main__':
     main()

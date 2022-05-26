@@ -6,6 +6,7 @@
 from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
 import glob
 import os
+import base64
 
 def ping(*args):
     results = []
@@ -70,7 +71,7 @@ def get(*args):
     results = []
     argsLen = len(args)
 
-    if argsLen != 2:
+    if argsLen != 3:
         response = {
             "success": False,
             "errorMsg": "Invalid argument count for get@FileManageFacade",
@@ -81,12 +82,18 @@ def get(*args):
     if os.path.exists(args[1]):
         fileSize = os.path.getsize(args[1]) / 1024
         fileName = (args[1].split('/'))[-1]
+        fileTarget = args[2]
+        
+        f = open(args[1], 'rb').read()
+        fileEncoded = base64.b64encode(f)
 
         response = {
             "success": True,
             "result": {
                 "fileSize": fileSize,
-                "fileName" : fileName
+                "fileName": fileName,
+                "fileTarget": fileTarget,
+                "fileEncoded": fileEncoded
             }
         }
         results.append(response)
