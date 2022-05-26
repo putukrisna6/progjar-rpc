@@ -31,10 +31,25 @@ def ls(*args):
 
     return results
 
+def count(*args):
+    results = []
+    parse = args[0].split()
+    parseLen = len(parse)
+
+    if parseLen == 1:
+        globbed = glob.glob('*')
+    else:
+        globbed = glob.glob(parse[1])
+
+    results.append(('Size', len(globbed)))
+
+    return results
+
 def main():
     server = SimpleJSONRPCServer(('localhost', 7002))
     server.register_function(ping)
     server.register_function(ls)
+    server.register_function(count)
     print("Starting server")
     server.serve_forever()
 

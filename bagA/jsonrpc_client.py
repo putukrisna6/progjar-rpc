@@ -17,6 +17,9 @@ class FileManageFacade:
     def ls(self, cmd):
         return self.proxy.ls(cmd)
 
+    def count(self, cmd):
+        return self.proxy.count(cmd)
+
 def printHelper(replies):
     for r in replies:
         print(r)
@@ -33,6 +36,8 @@ def main():
             printHelper(facade.ping(cmd))
         elif cmds[0] == 'ls':
             printHelper(facade.ls(cmd))
+        elif cmds[0] == 'count':
+            printHelper(facade.count(cmd))
 
 if __name__ == '__main__':
     main()
