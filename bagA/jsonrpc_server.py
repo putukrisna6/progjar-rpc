@@ -5,26 +5,21 @@
 
 from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
 
-def lengths(*args):
-    """Measure the length of each input argument.
-
-    Given N arguments, this function returns a list of N smaller
-    lists of the form [len(arg), arg] that each state the length of
-    an input argument and also echo back the argument itself.
-
-    """
+def ping(*args):
     results = []
+
+    results.append(('Size', len(args)))
+
+    i = 1
     for arg in args:
-        try:
-            arglen = len(arg)
-        except TypeError:
-            arglen = None
-        results.append((arglen, arg))
+        results.append(('Message_{}'.format(i), arg))
+        i += 1
+
     return results
 
 def main():
     server = SimpleJSONRPCServer(('localhost', 7002))
-    server.register_function(lengths)
+    server.register_function(ping)
     print("Starting server")
     server.serve_forever()
 
