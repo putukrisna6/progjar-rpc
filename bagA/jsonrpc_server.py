@@ -43,7 +43,7 @@ def ls(*args):
     response = {
         "success": True,
         "result": {
-            "files": globbed
+            "contents": globbed
         }
     }
     results.append(response)
@@ -61,7 +61,7 @@ def count(*args):
     response = {
         "success": True,
         "result": {
-            "fileCount": len(globbed)
+            "count": len(globbed)
         }
     }
     results.append(response)
