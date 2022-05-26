@@ -12,13 +12,16 @@ class FileManageFacade:
         self.proxy = Server('http://localhost:7002')
 
     def ping(self, cmd):
-        return self.proxy.ping(cmd)
+        return self.proxy.ping(*cmd)
 
     def ls(self, cmd):
-        return self.proxy.ls(cmd)
+        return self.proxy.ls(*cmd)
 
     def count(self, cmd):
-        return self.proxy.count(cmd)
+        return self.proxy.count(*cmd)
+
+    def get(self, cmd):
+        return self.proxy.get(*cmd)
 
 def printHelper(replies):
     for r in replies:
@@ -33,11 +36,11 @@ def main():
         cmds = cmd.split()
 
         if cmds[0] == 'ping':
-            printHelper(facade.ping(cmd))
+            printHelper(facade.ping(cmds))
         elif cmds[0] == 'ls':
-            printHelper(facade.ls(cmd))
+            printHelper(facade.ls(cmds))
         elif cmds[0] == 'count':
-            printHelper(facade.count(cmd))
+            printHelper(facade.count(cmds))
 
 if __name__ == '__main__':
     main()
