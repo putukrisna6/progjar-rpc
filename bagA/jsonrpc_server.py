@@ -31,9 +31,13 @@ def ls(*args):
     else:
         globbed = glob.glob(args[1])
 
-    for i in globbed:
-        results.append(i)
-
+    response = {
+        "success": True,
+        "result": {
+            "files": globbed
+        }
+    }
+    results.append(response)
     return results
 
 def count(*args):
@@ -45,8 +49,13 @@ def count(*args):
     else:
         globbed = glob.glob(args[1])
 
-    results.append(('Size', len(globbed)))
-
+    response = {
+        "success": True,
+        "result": {
+            "fileCount": len(globbed)
+        }
+    }
+    results.append(response)
     return results
 
 def get(*args):
