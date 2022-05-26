@@ -9,12 +9,20 @@ import os
 
 def ping(*args):
     results = []
-    argLen = len(args[1:])
+    argsLen = len(args[1:])
+
+    if argsLen == 0:
+        response = {
+            "success": False,
+            "errorMsg": "Invalid argument count for ping@FileManageFacade"
+        }
+        results.append(response)
+        return results
 
     response = {
         "success": True,
         "result": {
-            "wordCount": argLen,
+            "wordCount": argsLen,
             "messages": args[1:]
         }
     }
@@ -65,7 +73,7 @@ def get(*args):
     if argsLen != 2:
         response = {
             "success": False,
-            "errorMsg": "Not enough argument passed into get@FileManageFacade",
+            "errorMsg": "Invalid argument count for get@FileManageFacade",
         }
         results.append(response)
         return results
