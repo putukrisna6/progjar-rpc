@@ -22,7 +22,14 @@ class MyService(rpyc.Service):
         return input
 
     def count(self, input):
-        return input
+        results = []
+        argsLen = len(input)
+
+        if argsLen == 1:
+            globbed = glob.glob('*')
+        else:
+            globbed = glob.glob(input[1])
+        return results
 
     def put(self, input):
         return input
