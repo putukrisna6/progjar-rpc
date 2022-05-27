@@ -5,7 +5,7 @@
 
 import rpyc
 import os
-import json
+import base64
 
 class FileManageFacade:
     def __init__(self):
@@ -30,19 +30,54 @@ class FileManageFacade:
     def send(self, cmd):
         return self.proxy.root.send(*cmd)
 
-def jsonHelper(response):
-    print(json.dumps(response, indent=4))
-
 def printHelper(replies):
     for r in replies:
         print(r)
 
+def getHelper(response):
+    printHelper(response)
+
+    if not response[0]['success']:
+        return
+
+    result = response[0]['result']
+    fileEncoded = result['fileEncoded']
+    fileTarget = result['fileTarget']
+    
+    decoded = base64.b64decode(fileEncoded)
+    f = open('client_files/' + fileTarget, 'wb')
+    f.write(decoded)
+    f.close()
+
+def sendHelper(cmds):
+    fileData = []
+    if len(cmds) != 3:
+        return fileData
+
+    if os.path.exists(cmds[1]):
+        fileTarget = cmds[2]
+        
+        f = open(cmds[1], 'rb').read()
+        fileEncoded = base64.b64encode(f)
+
+        fileData.append(fileTarget)
+        fileData.append(fileEncoded)
+        return fileData
+
+    fileData.append('FILE_NOT_FOUND')
+    return fileData
+
+def makeDirIfNotExist(path):
+    isExist = os.path.exists(path)
+
+    if not isExist:
+        os.makedirs(path)
+
 def main():
     facade = FileManageFacade()
+    makeDirIfNotExist('client_files')
+    makeDirIfNotExist('server_files')
 
-    # fileobj = open('testfile.txt')
-    # linecount = facade.line_counter(fileobj, noisy)
-    # print('The number of lines in the file was', linecount)
     cmd = ''
     while (cmd != 'quit'):
         cmd = input()
@@ -54,11 +89,11 @@ def main():
             printHelper(facade.ls(cmds))
         elif cmds[0] == 'count':
             printHelper(facade.count(cmds))
-        # elif cmds[0] == 'get':
-        #     getHelper(facade.get(cmds))
-        # elif cmds[0] == 'send':
-        #     fileData = sendHelper(cmds)
-        #     jsonHelper(facade.send(fileData))
+        elif cmds[0] == 'get':
+            getHelper(facade.get(cmds))
+        elif cmds[0] == 'send':
+            fileData = sendHelper(cmds)
+            printHelper(facade.send(fileData))
 
 def noisy(string):
     print('Noisy:', repr(string))

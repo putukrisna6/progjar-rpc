@@ -84,5 +84,75 @@ class MyService(rpyc.Service):
         results.append(response)
         return results
 
+    def exposed_get(self, *args):
+        results = []
+        argsLen = len(args)
+
+        if argsLen != 3:
+            response = {
+                "success": False,
+                "errorMsg": "Invalid argument count for get@FileManageFacade",
+            }
+            results.append(response)
+            return results
+
+        if os.path.exists(args[1]):
+            fileSize = os.path.getsize(args[1]) / 1024
+            fileName = (args[1].split('/'))[-1]
+            fileTarget = args[2]
+            
+            f = open(args[1], 'rb').read()
+            fileEncoded = base64.b64encode(f)
+
+            response = {
+                "success": True,
+                "result": {
+                    "fileSize": fileSize,
+                    "fileName": fileName,
+                    "fileTarget": fileTarget,
+                    "fileEncoded": fileEncoded
+                }
+            }
+            results.append(response)
+            return results
+
+        response = {
+            "success": False,
+            "errorMsg": "File not found"
+        }
+        results.append(response)
+        return results
+
+    def exposed_send(self, *args):
+        results = []
+        argsLen = len(args)
+
+        if argsLen == 1 and args[0] == 'FILE_NOT_FOUND':
+            response = {
+                "success": False,
+                "errorMsg": "Unable to receive file"
+            }
+            results.append(response)
+            return results
+
+        if argsLen != 2:
+            response = {
+                "success": False,
+                "errorMsg": "Invalid argument count for send@FileManageFacade",
+            }
+            results.append(response)
+            return results
+
+        decoded = base64.b64decode(args[1])
+        f = open('server_files/' + args[0], 'wb')
+        f.write(decoded)
+        f.close
+
+        response = {
+            "success": True,
+        }
+        results.append(response)
+        return results
+
 if __name__ == '__main__':
     main()
